@@ -12,12 +12,37 @@ fn main() {
     // first, parse the command line args again (namely, the picture to process)
     // will also need some 'level' of pixelation (size of pixel groups, maybe?)
     // perhaps also allow the pixelation metric used
-
-
+    let args = env::args().collect();
+    let parsed = parse_cmd_line(&args);
     
-    basic_pixelate(&Path::new("./shyv.png"), 110)
+    let file = parsed.get("-f").unwrap();
+    let level = parsed.get("-l").unwrap();
+
+    let file = String::from(format!("./{}", &file));
+    let level = level.parse::<u32>().unwrap();
+
+    basic_pixelate(&Path::new(&file), level)
 
 }
+
+
+/// Parses the command line arguments into a HashMap
+fn parse_cmd_line(args: &Vec<String>) -> HashMap<String,&str> {
+
+    let mut parsed_args = HashMap::new();
+
+    if (args.len() % 2) != 1 {
+        panic!("Invalid input! Key without a pair identified.");
+    }
+
+    for i in (1..args.len()-1).step_by(2) {
+        parsed_args.insert(args[i].clone(), args[i+1].as_ref()); // insert into map
+    }
+
+    parsed_args
+
+}
+
 
 
 fn basic_pixelate(path: &Path, level: u32) {
